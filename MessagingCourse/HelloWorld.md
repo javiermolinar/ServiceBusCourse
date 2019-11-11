@@ -49,6 +49,7 @@ cd Send
 dotnet add package Microsoft.Azure.ServiceBus 
 dotnet restore
 cd ../Receive
+dotnet add package Microsoft.Azure.ServiceBus
 dotnet add package RabbitMQ.Client
 dotnet restore
 ```
