@@ -35,9 +35,7 @@ Now let's generate two projects, one for the publisher and one for the consumer:
 
 ``` cs
 dotnet new console --name Send
-mv Send/Program.cs Send/Send.cs
 dotnet new console --name Receive
-mv Receive/Program.cs Receive/Receive.cs
 ```
 
 This will create two new directories named Send and Receive.
@@ -49,7 +47,7 @@ cd Send
 dotnet add package Microsoft.Azure.ServiceBus 
 dotnet restore
 cd ../Receive
-dotnet add package RabbitMQ.Client
+dotnet add package Microsoft.Azure.ServiceBus 
 dotnet restore
 ```
 
@@ -63,18 +61,22 @@ We'll call our message publisher (sender) `Send.cs` and our message consumer (re
 In `Send.cs`, we need to use some namespaces:
 
 ```cs
+using System;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 ```
 and define some properties:
 
 ```cs
-const string ServiceBusConnectionString = "<your_connection_string>";
-const string QueueName = "<your_queue_name>";
-static IQueueClient queueClient;
+    class Program
+    {
+        const string ServiceBusConnectionString = "<your_connection_string>";
+        const string QueueName = "<your_queue_name>";
+        static IQueueClient queueClient;
 ```
+
+The connection string and the queue name should be provided so the queue client knows where to connect.
 
 then we can create a connection to the server:
 
@@ -89,7 +91,7 @@ To send, we must declare a queue for us to send to; then we can publish a messag
 ```cs
 try
 {
-    string messageBody = $"Hello World!";
+    string messageBody = $"{DateTime.Now}: Hello World!";
     var message = new Message(Encoding.UTF8.GetBytes(messageBody));
 
     // Write the body of the message to the console
@@ -102,6 +104,12 @@ catch (Exception exception)
 {
     Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
 }   
+```
+
+Since the message operations are async we will need to change our main method to be asynchronous. In this case we are not returning anything so a Task should be enough.
+
+```cs
+ static async Task Main(string[] args) 
 ```
 
 In service bus the queue must exists prior to sending messages. On other implementations as RabbitMQ the queue is idempotent and it will be created if doesn't exists.
@@ -123,6 +131,7 @@ As for the consumer, it listening for messages from Service Bus. So unlike the p
 The code (in `Receive.cs`) has almost the same using statements as Send:
 
 ```cs
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -170,6 +179,8 @@ And the callback method that will be executed for every message consumed
 ```cs
 static async Task ProcessMessagesAsync(Message message, CancellationToken token)
 {
+    //We need the await to not get a compiler warning
+    await Task.Run(()=>{});
     // Process the message
     Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}"); 
 }

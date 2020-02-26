@@ -79,20 +79,6 @@ This time we will introduce a delay using Thread.Sleep to replicate program that
         static async Task Main(string[] args)
         {
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);  
-            // Register QueueClient's MessageHandler and receive messages in a loop
-            RegisterOnMessageHandlerAndReceiveMessages();
-            var startTime = DateTime.UtcNow;
-            while(DateTime.UtcNow - startTime < TimeSpan.FromMinutes(1))
-            {
-                // Execute your loop here...
-            }          
-
-            await queueClient.CloseAsync();
-        }      
-
-        static void RegisterOnMessageHandlerAndReceiveMessages()
-        {
-            // Configure the MessageHandler Options in terms of exception handling, number of concurrent messages to deliver etc.
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
@@ -106,7 +92,14 @@ This time we will introduce a delay using Thread.Sleep to replicate program that
 
             // Register the function that will process messages
             queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-        }
+          
+
+            Console.ReadKey();
+            // We need to close the consumer to stop receiving and inform Service Bus broker
+            await queueClient.CloseAsync();
+        }      
+
+      
 
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
