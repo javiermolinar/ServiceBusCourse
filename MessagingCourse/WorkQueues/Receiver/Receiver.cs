@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Sender
+namespace Receiver
 {
-    class Program
+    class Receiver
     {
         static void Main(string[] args)
         {

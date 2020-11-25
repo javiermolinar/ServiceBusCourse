@@ -22,8 +22,6 @@ We'll write two programs in C#; a sender that sends a single message, and a cons
 
 #### Setup
 
-You have two options, either do it by yourself or use this integrated tutorial :)
-
 First lets verify that you have .NET Core toolchain in `PATH`:
 
 ``` cs
@@ -74,6 +72,12 @@ and define some properties:
         const string ServiceBusConnectionString = "<your_connection_string>";
         const string QueueName = "<your_queue_name>";
         static IQueueClient queueClient;
+
+        static async Task Main(string[] args)
+        {
+            
+        } 
+    }
 ```
 
 The connection string and the queue name should be provided so the queue client knows where to connect.
@@ -81,7 +85,11 @@ The connection string and the queue name should be provided so the queue client 
 then we can create a connection to the server:
 
 ```cs
-queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+static async Task Main(string[] args)
+{
+    queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+} 
+
 ```
 
 The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us. Here we connect to a broker. For this we need to specify the connection string and the queue we are going to connect to. The connection string contains all the requiered information about where the broker is placed and the credentials.
@@ -99,6 +107,8 @@ try
 
     // Send the message to the queue
     await queueClient.SendAsync(message);
+    
+    Console.WriteLine($"Message has been sent");
 }
 catch (Exception exception)
 {
@@ -117,12 +127,9 @@ In service bus the queue must exists prior to sending messages. On other impleme
 
 When the code above finishes running, the channel and the connection will be disposed. That's it for our publisher.
 
-Just click the `run` icon to get started
+To execute it just type `dotnet run`
 
-``` cs  --source-file .\HelloWorld\Sender\Program.cs --project .\HelloWorld\Sender\Sender.csproj 
-```
 Congratulations! You've sent your very first message!!!
-
 
 #### Receiving
 
@@ -179,10 +186,9 @@ And the callback method that will be executed for every message consumed
 ```cs
 static async Task ProcessMessagesAsync(Message message, CancellationToken token)
 {
-    //We need the await to not get a compiler warning
-    await Task.Run(()=>{});
     // Process the message
-    Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}"); 
+    Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:    {Encoding.UTF8.GetString(message.Body)}");
+    return Task.CompletedTask;
 }
 ```
 
@@ -196,28 +202,7 @@ Console.ReadKey();
 await queueClient.CloseAsync();
 ```
 
-**Important**
-If you are using the integrated editor you need to do a hack to keep it alive
-
-```cs
-//Instead of this
-//Console.ReadKey();
-var startTime = DateTime.UtcNow;
-while(DateTime.UtcNow - startTime < TimeSpan.FromSeconds(10))
-{
-    // We do nothing, just let the application alive
-}   
-
-// We need to close the consumer to stop receiving and inform Service Bus broker
-await queueClient.CloseAsync();
-```
-
-
-
-Just click the `run` icon to get started
-
-``` cs  --source-file .\HelloWorld\\Receiver\Program.cs --project .\HelloWorld\Receiver\Receiver.csproj 
-```
+To execute it just type `dotnet run`
 Congratulations! You've received your firsts messages!!!
 
 #### Next: [WorkQueues  &raquo;](./WorkQueues.md) Previous: [Home &laquo;](../Readme.md)
