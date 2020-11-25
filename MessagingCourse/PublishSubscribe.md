@@ -53,25 +53,22 @@ This time we will use a TopicClient
 const string ServiceBusConnectionString = "<connectionstring>";
 const string TopicName = "<channel name>";       
 // Topic client
-static ITopicClient topicClient;
+ITopicClient topicClient;
 
-static async Task Main(string[] args)
-{
-    topicClient = new TopicClient(ServiceBusConnectionString, TopicName);
-    Console.WriteLine("Write your message and press enter to send it to the channel");         
+topicClient = new TopicClient(ServiceBusConnectionString, TopicName);
+Console.WriteLine("Write your message and press enter to send it to the channel");         
 
-    while(true) {
-        Console.Write(">");
-        string message = Console.ReadLine();
-        var sbMessage = new Message(Encoding.UTF8.GetBytes(message));
-        // We will use the user properties bag where we can add any key value we want
-        // This way we can mark a message to an user
-        sbMessage.UserProperties.Add("User", "Javi");
+while(true) {
+    Console.Write(">");
+    string message = Console.ReadLine();
+    var sbMessage = new Message(Encoding.UTF8.GetBytes(message));
+    // We will use the user properties bag where we can add any key value we want
+    // This way we can mark a message to an user
+    sbMessage.UserProperties.Add("User", "Javi");
 
-        // Message is sent as before
-        await topicClient.SendAsync(sbMessage);
-    }                
-}      
+    // Message is sent as before
+    await topicClient.SendAsync(sbMessage);
+}
 ```
 
 Our receiver client won't be quite different than before. This time we will connect to the topic as before but also for a specific subscription which
@@ -82,30 +79,28 @@ const string ServiceBusConnectionString = "<connectionstring>";
 const string TopicName = "<channel name>";  
 const string SubscriptionName = "<your subscription name>";
 //Subscription client
-static ISubscriptionClient subscriptionClient;
+ISubscriptionClient subscriptionClient;
 
-static async Task Main(string[] args)
+// We define our new subscription client
+subscriptionClient = new SubscriptionClient(ServiceBusConnectionString, TopicName,SubscriptionName);
+
+// Configure the MessageHandler Options in terms of exception handling, number of concurrent messages to deliver etc.
+// By default message will be completed on receive
+
+var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
 {
-    // We define our new subscription client
-    subscriptionClient = new SubscriptionClient(ServiceBusConnectionString, TopicName,SubscriptionName);
+    // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
+    // Set it according to how many messages the application wants to process in parallel.        
+    MaxConcurrentCalls = 1
+};
 
-    // Configure the MessageHandler Options in terms of exception handling, number of concurrent messages to deliver etc.
-    // By default message will be completed on receive
+// Register the function that will process messages
+subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
 
-    var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
-    {
-        // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
-        // Set it according to how many messages the application wants to process in parallel.        
-        MaxConcurrentCalls = 1
-    };
+Console.ReadKey();
+// We need to close the consumer to stop receiving and inform Service Bus broker
+await subscriptionClient.CloseAsync();
 
-    // Register the function that will process messages
-    subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-
-    Console.ReadKey();
-    // We need to close the consumer to stop receiving and inform Service Bus broker
-    await subscriptionClient.CloseAsync();
-}
 ```
 
 Our new handler
@@ -127,6 +122,10 @@ static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceive
 
 ```
 
+Questions:
+
+- What happen with messages that were sent after close your receiver?
+- What would happen if someone else use your subscription?
 
 
 #### Previous: [WorkQueues &laquo;](./WorkQueues.md)

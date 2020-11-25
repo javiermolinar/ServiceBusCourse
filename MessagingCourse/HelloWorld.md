@@ -12,7 +12,7 @@ The major difference between ServiceBus and the post office is that it doesn't d
 1. **Queue:**  Is the name for a post box which lives inside Azure Service Bus. Although messages flow through ASB and your applications, they can only be stored inside a queue. A queue is only bound by the host's memory & disk limits, it's essentially a large message buffer. Many producers can send messages that go to one queue, and many consumers can try to receive data from one queue. This is how we represent a queue.
 1. **Consumer:** A consumer is a program that mostly waits to receive messages.
 
-## Hello World
+## Hello World Motivation
 
 We'll write two programs in C#; a sender that sends a single message, and a consumer that receives messages and prints them out. It's a "Hello World" of messaging.
 
@@ -29,7 +29,7 @@ dotnet --help
 ```
 should produce a help message.
 
-Now let's generate two projects, one for the publisher and one for the consumer:
+Now let's generate two projects, one for the sender and one for the receiver:
 
 ``` cs
 dotnet new console --name Send
@@ -54,7 +54,7 @@ Now we have the .NET project set up we can write some code.
 
 #### Sending
 
-We'll call our message publisher (sender) `Send.cs` and our message consumer (receiver) `Receive.cs`. The publisher will connect to ServiceBus, send a single message, then exit.
+We'll call our message publisher (sender) `Send.cs` and our message consumer (receiver) `Receive.cs`. The sender will connect to ServiceBus, send a single message, then exit.
 
 In `Send.cs`, we need to use some namespaces:
 
@@ -67,17 +67,11 @@ using Microsoft.Azure.ServiceBus;
 and define some properties:
 
 ```cs
-    class Program
-    {
-        const string ServiceBusConnectionString = "<your_connection_string>";
-        const string QueueName = "<your_queue_name>";
-        static IQueueClient queueClient;
 
-        static async Task Main(string[] args)
-        {
-            
-        } 
-    }
+const string ServiceBusConnectionString = "<your_connection_string>";
+const string QueueName = "<your_queue_name>";
+IQueueClient queueClient;
+     
 ```
 
 The connection string and the queue name should be provided so the queue client knows where to connect.
@@ -85,11 +79,7 @@ The connection string and the queue name should be provided so the queue client 
 then we can create a connection to the server:
 
 ```cs
-static async Task Main(string[] args)
-{
-    queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
-} 
-
+queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 ```
 
 The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us. Here we connect to a broker. For this we need to specify the connection string and the queue we are going to connect to. The connection string contains all the requiered information about where the broker is placed and the credentials.
@@ -125,7 +115,7 @@ Since the message operations are async we will need to change our main method to
 In service bus the queue must exists prior to sending messages. On other implementations as RabbitMQ the queue is idempotent and it will be created if doesn't exists.
 
 
-When the code above finishes running, the channel and the connection will be disposed. That's it for our publisher.
+When the code above finishes running, the channel and the connection will be disposed. That's it for our sender.
 
 To execute it just type `dotnet run`
 
@@ -133,7 +123,7 @@ Congratulations! You've sent your very first message!!!
 
 #### Receiving
 
-As for the consumer, it listening for messages from Service Bus. So unlike the publisher which publishes a single message, we'll keep the consumer running continuously to listen for messages and print them out.
+As for the consumer, it listening for messages from Service Bus. So unlike the sender which publishes a single message, we'll keep the consumer running continuously to listen for messages and print them out.
 
 The code (in `Receive.cs`) has almost the same using statements as Send:
 
@@ -145,7 +135,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 ```
 
-Setting up is the same as the publisher; we open a connection and a channel, and declare the queue from which we're going to consume. Note this matches up with the queue that Send publishes to.
+Setting up is the same as the sender; we open a connection and a channel, and declare the queue from which we're going to consume. Note this matches up with the queue that Send publishes to.
 
 ```cs
 const string ServiceBusConnectionString = "<your_connection_string>";
@@ -204,5 +194,10 @@ await queueClient.CloseAsync();
 
 To execute it just type `dotnet run`
 Congratulations! You've received your firsts messages!!!
+
+Questions:
+
+- What happen if the receiver is not down? And if can not process more messages at the moment? 
+- What happen if there is an exception while we are processing the message?
 
 #### Next: [WorkQueues  &raquo;](./WorkQueues.md) Previous: [Home &laquo;](../Readme.md)

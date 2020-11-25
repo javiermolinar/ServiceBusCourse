@@ -1,21 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessagingCourse", "MessagingCourse", "{3C48F730-5123-4461-895C-2D74AC0D2801}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelloWorld", "HelloWorld", "{519F24CA-432C-48C9-8A5C-6957479FEC31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "MessagingCourse\HelloWorld\Sender\Sender.csproj", "{756A206B-9BB2-4454-BFCE-FC874DDD1436}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sender", "MessagingCourse\HelloWorld\Sender\Sender.csproj", "{756A206B-9BB2-4454-BFCE-FC874DDD1436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receiver", "MessagingCourse\HelloWorld\Receiver\Receiver.csproj", "{248F906B-FE62-489D-A7F6-5FB89D8CCDB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Receiver", "MessagingCourse\HelloWorld\Receiver\Receiver.csproj", "{248F906B-FE62-489D-A7F6-5FB89D8CCDB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkQueues", "WorkQueues", "{BF1FAE9F-F178-42F7-9342-3720F5E653DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "MessagingCourse\WorkQueues\Sender\Sender.csproj", "{8594D18D-46BE-4930-8D02-AF4E8F81D335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sender", "MessagingCourse\WorkQueues\Sender\Sender.csproj", "{8594D18D-46BE-4930-8D02-AF4E8F81D335}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receiver", "MessagingCourse\WorkQueues\Receiver\Receiver.csproj", "{3AF30657-4E30-42F9-BBF0-F830A9F6227F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Receiver", "MessagingCourse\WorkQueues\Receiver\Receiver.csproj", "{3AF30657-4E30-42F9-BBF0-F830A9F6227F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishSubscribe", "PublishSubscribe", "{DE91E7E3-92AC-466A-83B7-58D101EC73E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Publisher", "MessagingCourse\PublishSubscribe\Publisher\Publisher.csproj", "{4DAA8E85-61C9-4008-8B97-020098AE9EB9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subscriber", "MessagingCourse\PublishSubscribe\Subscriber\Subscriber.csproj", "{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,9 +31,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{756A206B-9BB2-4454-BFCE-FC874DDD1436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -78,6 +81,33 @@ Global
 		{3AF30657-4E30-42F9-BBF0-F830A9F6227F}.Release|x64.Build.0 = Release|Any CPU
 		{3AF30657-4E30-42F9-BBF0-F830A9F6227F}.Release|x86.ActiveCfg = Release|Any CPU
 		{3AF30657-4E30-42F9-BBF0-F830A9F6227F}.Release|x86.Build.0 = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|x64.Build.0 = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Debug|x86.Build.0 = Debug|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|x64.ActiveCfg = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|x64.Build.0 = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|x86.ActiveCfg = Release|Any CPU
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9}.Release|x86.Build.0 = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|x64.Build.0 = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Debug|x86.Build.0 = Debug|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|x64.Build.0 = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|x86.ActiveCfg = Release|Any CPU
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{519F24CA-432C-48C9-8A5C-6957479FEC31} = {3C48F730-5123-4461-895C-2D74AC0D2801}
@@ -86,5 +116,11 @@ Global
 		{BF1FAE9F-F178-42F7-9342-3720F5E653DF} = {3C48F730-5123-4461-895C-2D74AC0D2801}
 		{8594D18D-46BE-4930-8D02-AF4E8F81D335} = {BF1FAE9F-F178-42F7-9342-3720F5E653DF}
 		{3AF30657-4E30-42F9-BBF0-F830A9F6227F} = {BF1FAE9F-F178-42F7-9342-3720F5E653DF}
+		{DE91E7E3-92AC-466A-83B7-58D101EC73E0} = {3C48F730-5123-4461-895C-2D74AC0D2801}
+		{4DAA8E85-61C9-4008-8B97-020098AE9EB9} = {DE91E7E3-92AC-466A-83B7-58D101EC73E0}
+		{5DC77C90-50B7-4B23-8E05-44FFD3143F5D} = {DE91E7E3-92AC-466A-83B7-58D101EC73E0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8AB9BF2-B167-4E03-AE10-56C8939CBDEF}
 	EndGlobalSection
 EndGlobal

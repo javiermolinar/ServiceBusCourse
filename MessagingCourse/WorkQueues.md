@@ -46,22 +46,16 @@ catch (Exception exception)
 
 When the code above finishes running, the channel and the connection will be disposed. That's it for our publisher.
 
-Just click the `run` icon to get started
-
-``` cs  --source-file .\WorkQueues\Sender\Program.cs --project .\WorkQueues\Sender\Sender.csproj 
-```
 
 ### Receiver
 
-**Important** We will need to create our reciver outside this playground to be able to open several instances to see how the work is balanced:
-
 #### Message acknowledgment
 
-Doing a task can take a few seconds. What happens if one of the consumers starts a long task and dies with it only partly done? With our current code, once Azure Service Bus delivers a message to the consumer it immediately marks it for deletion. In this case, if you kill a worker we will lose the message it was just processing. We'll also lose all the messages that were dispatched to this particular worker but were not yet handled.
+Doing a task can take a few seconds. What happens if one of the consumers starts a long task and dies with it only partly done? With our previous code, once Azure Service Bus delivers a message to the consumer it immediately marks it for deletion. In this case, if you kill a worker we will lose the message it was just processing. We'll also lose all the messages that were dispatched to this particular worker but were not yet handled.
 
 But we don't want to lose any tasks. If a worker dies, we'd like the task to be delivered to another worker.
 
-In order to make sure a message is never lost, Azure Service Bus supports message acknowledgments. An ack(nowledgement) is sent back by the consumer to tell the broker that a particular message has been received, processed and that RabbitMQ is free to delete it.
+In order to make sure a message is never lost, Azure Service Bus supports message acknowledgments. An ack(nowledgement) is sent back by the consumer to tell the broker that a particular message has been received, processed and that Azure Service Bus is free to delete it.
 
 If a consumer dies (its channel is closed, connection is closed, or TCP connection is lost) without sending an ack, Service Bus will understand that a message wasn't processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.
 
@@ -76,51 +70,55 @@ This time we will introduce a delay using Thread.Sleep to replicate program that
 
 ```cs
 
-        static async Task Main(string[] args)
-        {
-            queueClient = new QueueClient(ServiceBusConnectionString, QueueName);  
-            var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
-            {
-                // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
-                // Set it according to how many messages the application wants to process in parallel.
-                MaxConcurrentCalls = 1,
+       
+queueClient = new QueueClient(ServiceBusConnectionString, QueueName);  
+var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
+{
+    // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
+    // Set it according to how many messages the application wants to process in parallel.
+    MaxConcurrentCalls = 1,
 
-                // Indicates whether MessagePump should automatically complete the messages after returning from User Callback.
-                // False below indicates the Complete will be handled by the User Callback as in `ProcessMessagesAsync` below.
-                AutoComplete = false
-            };
+        // Indicates whether ServiceBus Sdk should complete  or not the message when message is received.  
+    AutoComplete = false
+};
 
-            // Register the function that will process messages
-            queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-          
+// Register the function that will process messages
+queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
 
-            Console.ReadKey();
-            // We need to close the consumer to stop receiving and inform Service Bus broker
-            await queueClient.CloseAsync();
-        }      
 
-      
+Console.ReadKey();
+// We need to close the consumer to stop receiving and inform Service Bus broker
+await queueClient.CloseAsync();
 
-        static async Task ProcessMessagesAsync(Message message, CancellationToken token)
-        {
-            string msg = Encoding.UTF8.GetString(message.Body);
-            // Process the message
-            Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{msg}");
 
-            Thread.Sleep(msg.Length * 1000);
 
-            Console.WriteLine("Finish processing");
 
-            // Complete the message so that it is not received again.
-            // This can be done only if the queueClient is created in ReceiveMode.PeekLock mode (which is default).
-            await queueClient.CompleteAsync(message.SystemProperties.LockToken);       
-        }
+static async Task ProcessMessagesAsync(Message message, CancellationToken token)
+{
+string msg = Encoding.UTF8.GetString(message.Body);
+// Process the message
+Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{msg}");
 
-        static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
-        {
-            Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");            
-            return Task.CompletedTask;
-        }
+Thread.Sleep(msg.Length * 1000);
+
+Console.WriteLine("Finish processing");
+
+// Complete the message so that it is not received again.
+// This can be done only if the queueClient is created in ReceiveMode.PeekLock mode (which is default).
+await queueClient.CompleteAsync(message.SystemProperties.LockToken);       
+}
+
+static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+{
+Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");            
+return Task.CompletedTask;
+}
 ```
+
+Questions:
+
+- How could we improve the performace for a single receiver?
+- What happen if we run several receivers at the same time? Can the receivers get duplicated messages?
+- What happen now if we get and exception processing the message?
 
 #### Next: [Publish-Subscribe  &raquo;](./PublishSubscribe.md) Previous: [Home &laquo;](./HelloWorld.md)
